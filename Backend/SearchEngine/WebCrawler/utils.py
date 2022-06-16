@@ -13,5 +13,7 @@ def getURLs(html):
         urls.append(url)
         page = page[url_end : ]
         next_href_position = page.find(href)
+    return urls
 
-    return urls    
+def getKeywords(html):
+    pass
