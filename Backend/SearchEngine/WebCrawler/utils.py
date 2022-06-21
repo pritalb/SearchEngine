@@ -1,5 +1,8 @@
 # find substrings of a string which come after the start(type: str) and before the immediately next occurence of end(type: str)
-def getSubstring(str, start, end):
+from string import punctuation
+
+
+def getStringPart(str, start, end):
     res = []
     str_copy = str
 
@@ -15,8 +18,32 @@ def getSubstring(str, start, end):
         next_start_position = str_copy.find(start)
     return res
 
+def getSubstrings(str):
+    punctuation = ',.<>;:|()*^%$#@!`~/?[]{}\\-+=\" '
+    subs = []
+    str_copy = str[:]
+    sep = '&&sep&&'
+
+    str_copy = str_copy.replace('&', ' and ')
+    for mark in punctuation:    
+        str_copy = str_copy.replace(mark, sep)
+    words = str_copy.split(sep)
+    words = list(filter(lambda x: x != '', words))
+
+    words_len = len(words)
+    for substring_length in range(1, words_len + 1):
+        current_index = 0
+        end = substring_length + current_index
+
+        while  end <= words_len:
+            subs.append(' '.join(words[current_index : end]))
+            current_index += 1
+            end = substring_length + current_index
+
+    return subs
+
 def getURLs(html):
-    return getSubstring(html, 'href="', '"')
+    return getStringPart(html, 'href="', '"')
 
 def getKeywords(html):
     tags_to_consider_paired = ['title', 'body'] #tags that are used alongside their respective closing tags
@@ -29,6 +56,6 @@ def getKeywords(html):
     noindex = False
 
     for tag in tags_to_consider_paired:
-        info[tag] = getSubstring(html, f'<{tag}>', f'</{tag}>')
+        info[tag] = getStringPart(html, f'<{tag}>', f'</{tag}>')
 
     return info

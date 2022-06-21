@@ -1,4 +1,4 @@
-from utils import getURLs, getKeywords
+from utils import getURLs, getKeywords, getSubstrings
 
 html = '''
     <!DOCTYPE html>
@@ -23,5 +23,8 @@ html = '''
     </html>
 '''
 
-print(getURLs(html))
-print(getKeywords(html))
+# print(getURLs(html))
+# print(getKeywords(html))
+# string = "The whole secret of a successful life is to find out what is one’s destiny to do, and then do it. - Henry Ford"
+string = 'This is a sample sentence.'
+print(getSubstrings(string))
