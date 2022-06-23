@@ -3,6 +3,22 @@ from string import punctuation
 
 
 def getStringPart(str, start, end):
+    # res = []
+    str_copy = str
+
+    start_len = len(start)
+    next_start_position = str_copy.find(start)
+
+    # while next_start_position != -1:
+    end_index = str_copy.find(end, next_start_position + start_len)
+    res = str_copy[next_start_position + start_len : end_index] 
+
+        # res.append(temp_res)
+        # str_copy = str_copy[end_index : ]
+        # next_start_position = str_copy.find(start)
+    return res
+
+def getMultipleStringParts(str, start, end):
     res = []
     str_copy = str
 
@@ -67,7 +83,7 @@ def getURLs(html):
 def getKeywords(html):
     tags_to_consider_paired = ['title', 'body'] #tags that are used alongside their respective closing tags
     # tags_to_consider_non_paired = ['meta',]
-    metadata = getStringPart(html, f'<meta', '>')
+    metadata = getMultipleStringParts(html, f'<meta', '>')
     info = {}
     keywords = {}
 
