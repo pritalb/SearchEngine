@@ -20,11 +20,15 @@ def getStringPart(str, start, end):
 
 def getSubstrings(str):
     punctuation = ',.<>;:|()*^%$#@!`~/?[]{}\\-+=\" '
+    escape_chars = ['\n', '\t']
     subs = []
     str_copy = str[:]
     sep = '&&sep&&'
 
     str_copy = str_copy.replace('&', ' and ')
+    for escape_char in escape_chars:
+        str_copy = str_copy.replace(escape_char, sep)
+
     for mark in punctuation:    
         str_copy = str_copy.replace(mark, sep)
     words = str_copy.split(sep)
@@ -42,14 +46,30 @@ def getSubstrings(str):
 
     return subs
 
+def removeTags(html):
+    page = html[:]
+
+    while '<' in page:
+        tag_starting = page.find('<')
+        tag = page[tag_starting : page.find('>') + 1]
+
+        page = page.replace(tag, '')
+
+        closing_tag = page[page.find('</') : page.find('>') + 1]
+        
+        page = page.replace(closing_tag, '')
+    return page
+
+
 def getURLs(html):
     return getStringPart(html, 'href="', '"')
 
 def getKeywords(html):
     tags_to_consider_paired = ['title', 'body'] #tags that are used alongside their respective closing tags
-    tags_to_consider_self_closing = ['img',]
-    tags_to_consider_non_closing = ['meta',]
+    # tags_to_consider_non_paired = ['meta',]
+    metadata = getStringPart(html, f'<meta', '>')
     info = {}
+    keywords = {}
 
     # for robot meta tag
     nofollow = False
@@ -58,4 +78,11 @@ def getKeywords(html):
     for tag in tags_to_consider_paired:
         info[tag] = getStringPart(html, f'<{tag}>', f'</{tag}>')
 
-    return info
+    for tag in info.keys():
+        for elem in info[tag]:
+            keywords[tag] = getSubstrings(elem)
+    
+    # for tag in tags_to_consider_non_paired:
+    #     info[tag] = getStringPart(html, f'<{tag}', '>')
+
+    return keywords

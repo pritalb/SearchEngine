@@ -1,4 +1,4 @@
-from utils import getURLs, getKeywords, getSubstrings
+from utils import getURLs, getKeywords, getSubstrings, removeTags
 
 html = '''
     <!DOCTYPE html>
@@ -15,16 +15,26 @@ html = '''
         <a href="url_3"> Link_3 </a>
 
         <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Id, eveniet. Obcaecati,
-            esse illo deleniti fugiat molestiae mollitia adipisci qui ab, neque quos, natus
-            quis exercitationem in. Dolore non aut quo?
+            This is some good website content.
         </p>
     </body>
     </html>
 '''
 
+# html = '''
+#     <body>
+#         <a href="url_1"> Link_1 </a>
+#         <a href="url_2"> Link_2 </a>
+#         <a href="url_3"> Link_3 </a>
+
+#         <p>
+#             This is some good website content.
+#         </p>
+#     </body>
+# '''
+
 # print(getURLs(html))
-# print(getKeywords(html))
+print(removeTags(html))
 # string = "The whole secret of a successful life is to find out what is one’s destiny to do, and then do it. - Henry Ford"
-string = 'This is a sample sentence.'
-print(getSubstrings(string))
+# string = 'This is a sample sentence.'
+# print(getSubstrings(string))
