@@ -50,17 +50,21 @@ def getSubstrings(str):
     words = str_copy.split(sep)
     words = list(filter(lambda x: x != '', words))
 
-    words_len = len(words)
-    for substring_length in range(1, words_len + 1):
-        current_index = 0
-        end = substring_length + current_index
+    # the code below returns a list of substrings all all lenghts/sizes i.e. from 1 word substrings to a substring with all words
+    # kept for future reference
 
-        while  end <= words_len:
-            subs.append(' '.join(words[current_index : end]))
-            current_index += 1
-            end = substring_length + current_index
+    # words_len = len(words)
+    # for substring_length in range(1, words_len + 1):
+    #     current_index = 0
+    #     end = substring_length + current_index
 
-    return subs
+    #     while  end <= words_len:
+    #         subs.append(' '.join(words[current_index : end]))
+    #         current_index += 1
+    #         end = substring_length + current_index
+
+    # return subs
+    return words
 
 def removeTags(html):
     page = html[:]
@@ -92,11 +96,13 @@ def getKeywords(html):
     noindex = False
 
     for tag in tags_to_consider_paired:
-        info[tag] = getStringPart(html, f'<{tag}>', f'</{tag}>')
+        if tag in html:
+            info[tag] = removeTags(getStringPart(html, f'<{tag}>', f'</{tag}>'))
 
+    print(info)
+    print('\n\n')
     for tag in info.keys():
-        for elem in info[tag]:
-            keywords[tag] = getSubstrings(elem)
+        keywords[tag] = getSubstrings(info[tag])
     
     # for tag in tags_to_consider_non_paired:
     #     info[tag] = getStringPart(html, f'<{tag}', '>')

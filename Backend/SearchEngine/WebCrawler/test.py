@@ -34,7 +34,7 @@ html = '''
 '''
 
 # print(getURLs(html))
-print(removeTags(getStringPart(html, f'<body>', f'</body>')))
+print(getKeywords(html))
 # string = "The whole secret of a successful life is to find out what is one’s destiny to do, and then do it. - Henry Ford"
 # string = 'This is a sample sentence.'
 # print(getSubstrings(string))
