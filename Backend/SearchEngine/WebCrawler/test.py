@@ -1,40 +1,10 @@
-from utils import getURLs, getKeywords, getSubstrings, removeTags,getStringPart
+from ast import keyword
+from urllib import response
+import requests
+from utils import getURLs, getKeywords, getSubstrings, removeTags,getStringPart, crawl
 
-# html = '''
-#     <!DOCTYPE html>
-#     <html lang="en">
-#     <head>
-#         <meta charset="UTF-8">
-#         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-#         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-#         <title>A Very nice title</title>
-#     </head>
-#     <body>
-#         <a href="url_1"> Link_1 </a>
-#         <a href="url_2"> Link_2 </a>
-#         <a href="url_3"> Link_3 </a>
+endpoint = 'https://sites.s3.jp-tok.cloud-object-storage.appdomain.cloud/seed.html'
+# response = requests.get(endpoint)
+# html = response.text
 
-#         <p>
-#             This is some good website content.
-#         </p>
-#     </body>
-#     </html>
-# '''
-
-html = '''
-    <body>
-        <a href="url_1"> Link_1 </a>
-        <a href="url_2"> Link_2 </a>
-        <a href="url_3"> Link_3 </a>
-
-        <p>
-            This is some good website content.
-        </p>
-    </body>
-'''
-
-# print(getURLs(html))
-print(getKeywords(html))
-# string = "The whole secret of a successful life is to find out what is one’s destiny to do, and then do it. - Henry Ford"
-# string = 'This is a sample sentence.'
-# print(getSubstrings(string))
+print(crawl(endpoint), end='\n')
