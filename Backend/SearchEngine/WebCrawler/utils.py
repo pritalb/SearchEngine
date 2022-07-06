@@ -153,17 +153,14 @@ def crawl(url):
             else:
                 index[keyword] = [url]
 
-        if not url in site_directory.keys():
-            site_directory[url] = {
-                'backlinks': 1,
-                'title_keywords': keywords['title'], 
-                'body_keywords': keywords['body'], 
-                'normalized_url': getDomain(url),
-                'domain': getDomain(url),
-                'last_modified': response.headers['Last-Modified'],
-            }
-        else:
-            site_directory[url]['backlinks'] += 1
+        site_directory[url] = {
+            'backlinks': 1,
+            'title_keywords': keywords['title'], 
+            'body_keywords': keywords['body'], 
+            'normalized_url': getDomain(url),
+            'domain': getDomain(url),
+            'last_modified': response.headers['Last-Modified'],
+        }
     # done adding data to db
 
 def webCrawler():
@@ -173,7 +170,10 @@ def webCrawler():
     while current_depth < depth:
         sites_to_crawl = crawl_frontier[:]
         for url in sites_to_crawl:
-            crawl(url)
+            if not url in site_directory.keys():
+                crawl(url)
+            else:
+                site_directory[url]['backlinks'] += 1
         current_depth += 1
 
 def test_webCrawler():

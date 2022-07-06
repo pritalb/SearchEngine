@@ -7,5 +7,5 @@ endpoint = 'https://sites.s3.jp-tok.cloud-object-storage.appdomain.cloud/noindex
 # response = requests.get(endpoint)
 # html = response.text
 
-print(getDomain('http://www.site.com/some/route'))
-# test_webCrawler()
+# print(getDomain('http://www.site.com/some/route'))
+test_webCrawler()
