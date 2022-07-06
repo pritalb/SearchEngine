@@ -87,6 +87,11 @@ def removeTags(html):
         page = page.replace(closing_tag, '')
     return page
 
+def getDomain(url):
+    domain_start = url.find('://') + 3
+    domain_end = url.find('/', domain_start)
+
+    return url[domain_start : domain_end]
 
 def getURLs(html):
     return getMultipleStringParts(html, 'href="', '"')
@@ -153,8 +158,8 @@ def crawl(url):
                 'backlinks': 1,
                 'title_keywords': keywords['title'], 
                 'body_keywords': keywords['body'], 
-                'normalized_url': '',
-                'domain': '',
+                'normalized_url': getDomain(url),
+                'domain': getDomain(url),
                 'last_modified': response.headers['Last-Modified'],
             }
         else:
