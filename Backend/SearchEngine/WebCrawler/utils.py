@@ -7,7 +7,7 @@ import requests
 # sample data structures
 # to be replaced by models once they work
 
-crawl_frontier = []
+crawl_frontier = ['https://sites.s3.jp-tok.cloud-object-storage.appdomain.cloud/seed.html',]
 crawled_sites = []
 index = {}
 site_directory = {}
@@ -94,7 +94,6 @@ def getURLs(html):
 def getKeywords(html):
     tags_to_consider_paired = ['title', 'body'] #tags that are used alongside their respective closing tags
     # tags_to_consider_non_paired = ['meta',]
-    metadata = getMultipleStringParts(html, f'<meta', '>')
     info = {}
     keywords = {}
 
@@ -116,39 +115,66 @@ def getKeywords(html):
 def crawl(url):
     response = requests.get(url)
     html = response.text
+    metadata = getMultipleStringParts(html, f'<meta', '>')
+    robot_tag = ''
+
+    for data in metadata:
+        if ('name="robots"' in data) or ("name='robots'" in data):
+            robot_tag = data
+            break
+    nofollow = 'nofollow' in robot_tag
+    noindex = 'noindex' in robot_tag
 
     follow_urls = getURLs(html)
     keywords = getKeywords(html)
 
-    # add data to db
-    crawl_frontier = follow_urls[:]
-    crawled_sites.append(url)
+    # add data to db or update
+    crawl_frontier.remove(url)
 
-    for keyword in keywords['body']:
-        if keyword in index.keys():
-            related_sites = index[keyword]
-            if not url in related_sites:
-                index[keyword].append(url)
+
+    if not nofollow:
+        for follow_url in follow_urls:
+            crawl_frontier.append(follow_url)
+    
+    if url not in crawled_sites:
+        crawled_sites.append(url)
+
+    if not noindex:
+        for keyword in keywords['body']:
+            if keyword in index.keys():
+                related_sites = index[keyword]
+                if not url in related_sites:
+                    index[keyword].append(url)
+            else:
+                index[keyword] = [url]
+
+        if not url in site_directory.keys():
+            site_directory[url] = {
+                'backlinks': 1,
+                'title_keywords': keywords['title'], 
+                'body_keywords': keywords['body'], 
+                'normalized_url': '',
+                'domain': '',
+                'last_modified': response.headers['Last-Modified'],
+            }
         else:
-            index[keyword] = [url]
-
-    if not url in site_directory.keys():
-        site_directory[url] = {
-            'backlinks': 1,
-            'title_keywords': keywords['title'], 
-            'body_keywords': keywords['body'], 
-            'normalized_url': '',
-            'domain': '',
-            'last_modified': response.headers['Last-Modified'],
-        }
-    else:
-        site_directory[url]['backlinks'] += 1
+            site_directory[url]['backlinks'] += 1
     # done adding data to db
+
+def webCrawler():
+    depth = 4
+    current_depth = 0
+
+    while current_depth < depth:
+        sites_to_crawl = crawl_frontier[:]
+        for url in sites_to_crawl:
+            crawl(url)
+        current_depth += 1
+
+def test_webCrawler():
+    webCrawler()
 
     print(f'crawl frontier: {crawl_frontier} \n\n')
     print(f'crawled sites: {crawled_sites} \n\n')
     print(f'site directory: {site_directory} \n\n')
-    return index
-
-def webCrawler(seed):
-    pass
+    print(f'index: {index} \n\n')
