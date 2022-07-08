@@ -5,7 +5,6 @@ from django.db import models
 class Url(models.Model):
     url = models.URLField()
     title = models.TextField()
-    last_updated = models.DateTimeField()
     backlinks = models.IntegerField()
 
 class Index(models.Model):

@@ -1,16 +1,20 @@
 # find substrings of a string which come after the start(type: str) and before the immediately next occurence of end(type: str)
 from msilib.schema import Directory
 from string import punctuation
+from turtle import title
+from weakref import KeyedRef
 import requests
+
+from .models import CrawlFrontier, CrawledSites, Index, Url
 
 
 # sample data structures
 # to be replaced by models once they work
 
-crawl_frontier = ['https://sites.s3.jp-tok.cloud-object-storage.appdomain.cloud/seed.html',]
-crawled_sites = []
-index = {}
-site_directory = {}
+# crawl_frontier = ['https://sites.s3.jp-tok.cloud-object-storage.appdomain.cloud/seed.html',]
+# crawled_sites = []
+# index = {}
+# site_directory = {}
 
 #
 
@@ -118,6 +122,8 @@ def getKeywords(html):
     return keywords
 
 def crawl(url):
+    # crawl_frontier = CrawlFrontier.objects.all()
+
     response = requests.get(url)
     html = response.text
     metadata = getMultipleStringParts(html, f'<meta', '>')
@@ -134,52 +140,68 @@ def crawl(url):
     keywords = getKeywords(html)
 
     # add data to db or update
-    crawl_frontier.remove(url)
 
 
     if not nofollow:
         for follow_url in follow_urls:
-            crawl_frontier.append(follow_url)
+            CrawlFrontier.objects.create(url=follow_url)
     
-    if url not in crawled_sites:
-        crawled_sites.append(url)
+    if not CrawledSites.objects.filter(url=url).exists():
+        CrawledSites.objects.create(url=url)
+
+
+
+    url_object = Url.objects.create(
+        url=url,
+        title=' '.join(keywords['title']),
+        backlinks=1,        
+    )
 
     if not noindex:
         for keyword in keywords['body']:
-            if keyword in index.keys():
-                related_sites = index[keyword]
-                if not url in related_sites:
-                    index[keyword].append(url)
+            if Index.objects.filter(keyword=keyword).exists():
+                index_object = Index.objects.get(keyword=keyword)
+                if not index_object.urls.filter(url=url).exists():
+                    index_object.urls.add(url_object)
+                    index_object.save()
             else:
-                index[keyword] = [url]
+                index_object = Index.objects.create(keyword=keyword)
+                index_object.urls.add(url_object)
+                index_object.save()
 
-        site_directory[url] = {
-            'backlinks': 1,
-            'title_keywords': keywords['title'], 
-            'body_keywords': keywords['body'], 
-            'normalized_url': getDomain(url),
-            'domain': getDomain(url),
-            'last_modified': response.headers['Last-Modified'],
-        }
-    # done adding data to db
+
+    #     site_directory[url] = {
+    #         'backlinks': 1,
+    #         'title_keywords': keywords['title'], 
+    #         'body_keywords': keywords['body'], 
+    #         'normalized_url': getDomain(url),
+    #         'domain': getDomain(url),
+    #         'last_modified': response.headers['Last-Modified'],
+    #     }
+    # # done adding data to db
 
 def webCrawler():
     depth = 4
     current_depth = 0
 
     while current_depth < depth:
-        sites_to_crawl = crawl_frontier[:]
-        for url in sites_to_crawl:
-            if not url in site_directory.keys():
+        for cf_url_object in CrawlFrontier.objects.all():
+            url = cf_url_object.url
+    
+            if not Url.objects.filter(url=url).exists():
                 crawl(url)
             else:
-                site_directory[url]['backlinks'] += 1
+                url_object = Url.objects.get(url=url)
+                url_object.backlinks += 1
+                url_object.save()
+
+            cf_url_object.delete()
         current_depth += 1
 
-def test_webCrawler():
+def run_webCrawler():
     webCrawler()
 
-    print(f'crawl frontier: {crawl_frontier} \n\n')
-    print(f'crawled sites: {crawled_sites} \n\n')
-    print(f'site directory: {site_directory} \n\n')
-    print(f'index: {index} \n\n')
+    # print(f'crawl frontier: {crawl_frontier} \n\n')
+    # print(f'crawled sites: {crawled_sites} \n\n')
+    # print(f'site directory: {site_directory} \n\n')
+    # print(f'index: {index} \n\n')
