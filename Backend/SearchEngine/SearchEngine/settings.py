@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'WebCrawler',
     'Search',
     'Api',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
