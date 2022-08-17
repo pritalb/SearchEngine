@@ -87,12 +87,12 @@ WSGI_APPLICATION = 'SearchEngine.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ddr8jamri271g6',
-        'USER': 'bfwqxjzwcttkaq',
-        'PASSWORD': '84d51ec1034a2d6e7d3676ceb41a3f8db78c6ca42f74021fbc1f749670ac2f1a',
-        'HOST': 'ec2-34-239-241-121.compute-1.amazonaws.com',
-        'PORT': '5432',
+        'ENGINE': '',
+        'NAME': '',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': '',
     }
 }
 

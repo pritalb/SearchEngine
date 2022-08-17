@@ -24,9 +24,15 @@ def rank(index_objects):
 
     for url in result_urls.keys():
         url_info = result_urls[url]
-        ranked_results[url_info['backlinks'] + url_info['keyword_count']] = {
+        url_score = url_info['backlinks'] + url_info['keyword_count']
+
+
+        ranked_results[url_score] = {
             'url': url,
             'title': url_info['title'],
+            'ranking_score': url_score,
+            'backlinks': url_info['backlinks'],
+            'keywords_present': url_info['keyword_count'],
         }
 
     return ranked_results
